@@ -1,0 +1,26 @@
+#!/bin/bash 
+#SBATCH --job-name=a2 ### name your job 
+#SBATCH --time=00:10:00		 ### hh:mm:ss or dd-hh:mm:ss
+#SBATCH --mem=16G				 ### memory setting is max @ 125 MB per core
+#SBATCH --ntasks=128			 ### launch 128 mpi processes
+#SBATCH --cpus-per-task=1		 ### single-threaded processes
+#SBATCH --ntasks-per-node=16   ### 16 mpi processes per node
+#SBATCH --output=a2.%j.out
+#SBATCH --partition=defq
+
+
+module load openmpi/4.1.5-gcc-11.2.0-ux65npg
+
+if [ ! -f a2 ]
+then-
+ mpicc a2.c -o a2 -Wall -lpthread -lm
+else
+ if [ a2.c -nt a2 ]
+ then
+  mpicc a2.c -o a2 -Wall -lpthread -lm
+ fi
+fi
+
+srun --mpi=pmix -n 13 a2 3 4 5
+
+exit 0
